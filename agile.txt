@@ -696,3 +696,288 @@ CD
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Jenkins Pipeline Experiments (Detailed Version) 
+Experiment 1:
+ Basic Pipeline with Parameter and BAT Command Objective: To verify GitHub integration, 
+parameter handling, and execution of simple Windows batch commands using Jenkins Pipeline. 
+Version 1 • Task 1: Configure pipeline to checkout source code from GitHub repository. • Task 2: 
+Define a string parameter named MESSAGE and print its value in the console output. • Task 3: 
+Execute a simple Windows batch command using BAT to display 'Hello from Jenkins'. Version 2 • 
+Task 1: Checkout updated code from GitHub after modifying a file in IDE. • Task 2: Execute BAT 
+command to display current system date. • Task 3: Print the parameter value again to verify 
+parameter passing. Version 3 • Task 1: Checkout latest commit from GitHub. • Task 2: Create a file 
+named output.txt using BAT command. • Task 3: Display the contents of output.txt in Jenkins 
+console. Version 4 • Task 1: Checkout latest version from GitHub. • Task 2: Accept USERNAME 
+parameter from user. • Task 3: Create user.txt file and store the username inside it. 
+import java.util.Scanner;
+public class GradeAnalyzer {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        System.out.print("Enter the number of students: ");
+        int numStudents = input.nextInt();
+        double[] grades = new double[numStudents];
+        double sum = 0;
+        //
+ Input Loop
+        for (int i = 0; i < numStudents; i++) {
+            System.out.print("Enter grade for student " + (i + 1) + ": ");
+            grades[i] = input.nextDouble();
+            sum += grades[i];
+        }
+        //
+ Calculations
+        double average = sum / numStudents;
+        double highest = grades[0];
+        double lowest = grades[0];
+        for (double g : grades) {
+            if (g > highest) highest = g;
+            if (g < lowest) lowest = g;
+        }
+        //
+ Output Results
+        System.out.println("\n--- grade Analysis Results ---");
+        System.out.printf("Average Score: %.2f%n", average);
+        System.out.println("Highest Score: " + highest);
+        System.out.println("Lowest Score:  " + lowest);
+        System.out.println("\nGrade Breakdown:");
+        for (int i = 0; i < numStudents; i++) {
+            System.out.println("Student " + (i + 1) + ": " + grades[i] + " (" + getLetterGrade(grades[i]) +
+")");
+    }
+        }
+    // Helper method for grading logic
+    public static String getLetterGrade(double score) {
+        if (score >= 90) return "A";
+        if (score >= 80) return "B";
+        if (score >= 70) return "C";
+        if (score >= 60) return "D";
+        return "F";
+    }
+}
+
+Version 1
+Version 1 • Task 1: Configure pipeline to checkout source code from GitHub repository. • Task 2: 
+Define a string parameter named MESSAGE and print its value in the console output. • Task 3: 
+Execute a simple Windows batch command using BAT to display 'Hello from Jenkins'. 
+pipeline {
+    agent any
+    parameters {
+        string(name: 'MESSAGE', defaultValue: 'Hello from GradeAnalyzer', description: 'User input 
+message')
+    }
+    stages {
+        stage('Task 1: Checkout Source Code') {
+            steps {
+                git
+            }
+        }
+ branch: 'main', url: 'https://github.com/dhivyathirisha138-sudo/studentgrade.git'
+        stage('Task 2: Print Parameter') {
+            steps {
+                //
+ Prints the value entered by the user
+            }
+                echo "Console Output: ${params.MESSAGE}"
+        }
+        stage('Task 3: Execute BAT Command') {
+            steps {
+                //
+ Execute a simple Windows batch command
+                bat
+ "echo Hello from Jenkins"
+            }
+        }
+    }
+version 2
+Version 2 • Task 1: Checkout updated code from GitHub after modifying a file in IDE. • Task 2: 
+Execute BAT command to display current system date. • Task 3: Print the parameter value again to 
+verify parameter passing. 
+pipeline {
+    agent any
+    parameters {
+        string(name: 'MESSAGE', defaultValue: 'Version 2 Running', description: 'Enter message')
+    }
+    stages {
+        stage('Task 1: Checkout Latest Code') {
+            steps {
+                git
+            }
+        }
+ branch: 'main', url: 'https://github.com/dhivyathirisha138-sudo/studentgrade.git'
+        stage('Task 2: System Date') {
+            steps {
+            }
+                bat
+ "date /t"
+        }
+        stage('Task 3: Verify Parameter') {
+            steps {
+                echo "The current build message is: ${params.MESSAGE}"
+                echo "Verify: Code has been updated from IDE."
+            }
+        }
+    }
+}
+version 3
+Version 3 • Task 1: Checkout latest commit from GitHub. • Task 2: Create a file named output.txt 
+using BAT command. • Task 3: Display the contents of output.txt in Jenkins console 
+pipeline {
+    agent any
+    stages {
+        stage('Task 1: Checkout Latest Commit') {
+            steps {
+                git
+            }
+        }
+ branch: 'main', url: 'https://github.com/dhivyathirisha138-sudo/studentgrade.git'
+        stage('Task 2: Create Output File') {
+            steps {
+                bat
+            }
+        }
+ "echo Analysis for Student Grade System completed successfully > output.txt"
+        stage('Task 3: Display File Content') {
+            steps {
+                bat
+ "type output.txt"
+            }
+        }
+    }
+}
+version 4
+Version 4 • Task 1: Checkout latest version from GitHub. • Task 2: Accept USERNAME parameter 
+from user. • Task 3: Create user.txt file and store the username inside it. 
+pipeline {
+    agent any
+    parameters {
+        string(name: 'USERNAME', defaultValue: 'DefaultUser', description: 'Enter your name')
+    }
+    stages {
+        stage('Task 1: Checkout') {
+            steps {
+                git
+            }
+        }
+ branch: 'main', url: 'https://github.com/dhivyathirisha138-sudo/studentgrade.git'
+        stage('Task 2 & 3: Save User Info') {
+            steps {
+                echo "The user running this build is: ${params.USERNAME}"
+                bat
+                bat
+ "echo ${params.USERNAME} > user.txt"
+ "type user.txt"
+            }
+        }
+    }
+}
+
+Experiment 6: 
+Environment Variables 
+Objective: To understand usage of environment variables and parameter passing in Jenkins Pipeline.
+Version 1 • Task 1: Checkout repository. • Task 2: Print Jenkins environment variables. • Task 3: 
+Display custom echo message 
+version 1
+pipeline {
+    agent any
+    stages {
+        stage('Task 1: Checkout Repository') {
+            steps {
+                git
+            }
+ branch: 'main', url: 'https://github.com/dhivyathirisha138-sudo/studentgrade.git'
+        }
+        stage('Task 2: System Audit (Environment Variables)') {
+            steps {
+                bat
+            }
+        }
+ "set"
+version 2
+Version 2
+ • Task 1: Checkout repository. 
+• Task 2: Define custom environment variable inside pipeline. 
+• Task 3: Print environment variable using BAT. 
+pipeline {
+    agent any
+    environment {
+        COURSE_NAME = "DevOps_Lab"
+        STUDENT_REPO = "StudentGradeProject"
+    }
+    stages {
+        stage('Task 1: Checkout') {
+            steps {
+                git
+            }
+ branch: 'main', url: 'https://github.com/dhivyathirisha138-sudo/studentgrade.git'
+        }
+
+
+version 3
+Version 3 • Task 1: Checkout repository. • Task 2: Accept VERSION parameter from user. • Task 3: 
+Create version.txt file storing version value. 
+pipeline {
+    agent any
+    parameters {
+        string(name: 'VERSION', defaultValue: '1.0.0', description: 'Specify the version number')
+    }
+    stages {
+        stage('Task 1: Checkout') {
+            steps {
+                git
+            }
+        }
+ branch: 'main', url: 'https://github.com/dhivyathirisha138-sudo/studentgrade.git'
+        stage('Task 2 & 3: File Versioning') {
+            steps {
+                echo "User defined version: ${params.VERSION}"
+                
+                bat "echo ${params.VERSION} > version.txt"
+                
+                bat "type version.txt"
+            }
+        }
+    }
+}
+
+
+
+version 4
+Version 4 • Task 1: Checkout repository. • Task 2: Print Git commit ID in console. • Task 3: Display 
+final build result. 
+pipeline {
+    agent any
+    stages {
+        stage('Task 1: Checkout') {
+            steps {
+                git
+ branch: 'main', url: 'https://github.com/dhivyathirisha138-sudo/studentgrade.git'
+        }
+            }
+        stage('Task 2: Print Git Commit ID') {
+            steps {
+                echo "The unique Git Commit ID for this build is: ${env.GIT_COMMIT}"
+            }
+        }
+stage('Task 3: Final Result') {
+            steps {
+                echo "Build Status: SUCCESS"
+                echo "Build Number: # ${env.BUILD_NUMBER}"
+                echo "Project Name: ${env.JOB_NAME}"
+            }
+        }
+    }
